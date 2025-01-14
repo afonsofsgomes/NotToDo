@@ -31,3 +31,86 @@ A modern and intuitive **Todo List App** built with React and Vite. This app hel
    ```bash
    git clone <repository_url>
    cd todo-app
+   ```
+
+2. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Run the Development Server**:
+   ```bash
+   npm run dev
+   ```
+
+4. Open the app in your browser:
+   ```
+   http://localhost:5173
+   ```
+
+## Scripts
+
+- **`npm run dev`**: Starts the development server.
+- **`npm run build`**: Builds the app for production.
+- **`npm run preview`**: Previews the production build.
+
+## Project Structure
+
+```
+src/
+├── components/
+│   ├── StatisticsPanel.jsx  # Displays app statistics
+│   ├── TodoItem.jsx         # Individual todo item component
+│   ├── App.jsx              # Main app logic
+├── index.css                # Global styles
+├── main.jsx                 # Entry point
+├── index.html               # Main HTML file
+├── postcss.config.js        # PostCSS configuration
+├── tailwind.config.js       # TailwindCSS configuration
+package.json                 # Project metadata and dependencies
+```
+
+## Dependencies
+
+### Main Dependencies:
+```json
+"dependencies": {
+  "react": "^18.2.0",
+  "react-dom": "^18.2.0",
+  "react-hook-form": "^7.45.4",
+  "react-icons": "^4.10.1",
+  "uuid": "^9.0.0",
+  "react-beautiful-dnd": "^13.1.1",
+  "date-fns": "^2.30.0",
+  "react-datepicker": "^4.16.0"
+}
+```
+
+### Dev Dependencies:
+```json
+"devDependencies": {
+  "@types/react": "^18.0.28",
+  "@types/react-dom": "^18.0.11",
+  "@vitejs/plugin-react": "^4.0.3",
+  "autoprefixer": "^10.4.14",
+  "postcss": "^8.4.24",
+  "tailwindcss": "^3.3.2",
+  "vite": "^4.3.9"
+}
+```
+
+## Screenshots
+
+### Light Mode
+![Light Mode](./path-to-screenshot-light-mode.png)
+
+### Dark Mode
+![Dark Mode](./path-to-screenshot-dark-mode.png)
+
+## Contribution
+
+Contributions are welcome! Feel free to fork the repo, submit a pull request, or report issues.
+
+## License
+
+This project is open-source and available under the [MIT License](./LICENSE).
