@@ -1,20 +1,54 @@
-import React, { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import { v4 as uuidv4 } from 'uuid'
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
-import { FaMoon, FaSun, FaFilter, FaChartLine } from 'react-icons/fa'
-import TodoItem from './components/TodoItem'
-import StatisticsPanel from './components/StatisticsPanel'
+import React, { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { v4 as uuidv4 } from 'uuid';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { 
+  FaMoon, 
+  FaSun, 
+  FaChartLine,
+  FaCheck,
+  FaTrash,
+  FaFileExport,
+  FaFileImport
+} from 'react-icons/fa';
+import TodoItem from './components/TodoItem';
+import StatisticsPanel from './components/StatisticsPanel';
 
-function App() {
-  const [todos, setTodos] = useState([])
-  const [filter, setFilter] = useState('all')
-  const [darkMode, setDarkMode] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [showStats, setShowStats] = useState(false)
-  const { register, handleSubmit, reset } = useForm()
+// Helper function to get todos from localStorage
+const getStoredTodos = () => {
+  try {
+    const storedTodos = localStorage.getItem('todos');
+    return storedTodos ? JSON.parse(storedTodos) : [];
+  } catch (error) {
+    console.error('Error loading todos from localStorage:', error);
+    return [];
+  }
+};
 
-  // ... (previous useEffect and localStorage code)
+const App = () => {
+  const [todos, setTodos] = useState(getStoredTodos());
+  const [filter, setFilter] = useState('all');
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem('darkMode') === 'true' || false
+  );
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showStats, setShowStats] = useState(false);
+  const { register, handleSubmit, reset } = useForm();
+
+  // Save todos to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('todos', JSON.stringify(todos));
+    } catch (error) {
+      console.error('Error saving todos to localStorage:', error);
+    }
+  }, [todos]);
+
+  // Handle dark mode toggle
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', darkMode);
+    localStorage.setItem('darkMode', darkMode);
+  }, [darkMode]);
 
   const addTodo = (data) => {
     const newTodo = {
@@ -24,88 +58,98 @@ function App() {
       priority: 0,
       dueDate: null,
       createdAt: new Date().toISOString()
-    }
-    setTodos([...todos, newTodo])
-    reset()
-  }
+    };
+    setTodos(prevTodos => [...prevTodos, newTodo]);
+    reset();
+  };
+
+  const toggleComplete = (id) => {
+    setTodos(todos.map(todo => 
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    ));
+  };
+
+  const deleteTodo = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
 
   const onDragEnd = (result) => {
-    if (!result.destination) return
+    if (!result.destination) return;
     
-    const items = Array.from(todos)
-    const [reorderedItem] = items.splice(result.source.index, 1)
-    items.splice(result.destination.index, 0, reorderedItem)
+    const items = Array.from(todos);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
     
-    setTodos(items)
-  }
+    setTodos(items);
+  };
 
   const updateDueDate = (id, date) => {
     setTodos(todos.map(todo => 
       todo.id === id ? { ...todo, dueDate: date } : todo
-    ))
-  }
+    ));
+  };
 
   const updatePriority = (id, priority) => {
     setTodos(todos.map(todo => 
       todo.id === id ? { ...todo, priority } : todo
-    ))
-  }
+    ));
+  };
 
   const editTodo = (id, newText) => {
     setTodos(todos.map(todo => 
       todo.id === id ? { ...todo, text: newText } : todo
-    ))
-  }
+    ));
+  };
 
   const bulkComplete = () => {
-    setTodos(todos.map(todo => ({ ...todo, completed: true })))
-  }
+    setTodos(todos.map(todo => ({ ...todo, completed: true })));
+  };
 
   const bulkDelete = () => {
-    setTodos(todos.filter(todo => !todo.completed))
-  }
+    setTodos(todos.filter(todo => !todo.completed));
+  };
 
   const exportTodos = () => {
-    const dataStr = JSON.stringify(todos)
-    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr)
-    const exportFileDefaultName = 'todos.json'
+    const dataStr = JSON.stringify(todos);
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+    const exportFileDefaultName = 'todos.json';
     
-    const linkElement = document.createElement('a')
-    linkElement.setAttribute('href', dataUri)
-    linkElement.setAttribute('download', exportFileDefaultName)
-    linkElement.click()
-  }
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
 
   const importTodos = (event) => {
-    const file = event.target.files[0]
-    const reader = new FileReader()
+    const file = event.target.files[0];
+    const reader = new FileReader();
     
     reader.onload = (e) => {
       try {
-        const importedTodos = JSON.parse(e.target.result)
-        setTodos(importedTodos)
+        const importedTodos = JSON.parse(e.target.result);
+        setTodos(importedTodos);
       } catch (error) {
-        alert('Invalid file format')
+        alert('Invalid file format');
       }
-    }
+    };
     
-    reader.readAsText(file)
-  }
+    reader.readAsText(file);
+  };
 
   const filteredTodos = todos.filter(todo => {
-    if (filter === 'active') return !todo.completed
-    if (filter === 'completed') return todo.completed
-    return true
+    if (filter === 'active') return !todo.completed;
+    if (filter === 'completed') return todo.completed;
+    return true;
   }).filter(todo => 
     todo.text.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  );
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
       <div className="max-w-4xl mx-auto p-4">
         {/* Header and Dark Mode Toggle */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Enhanced Todo App</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Todo App</h1>
           <div className="flex gap-2">
             <button
               onClick={() => setShowStats(!showStats)}
@@ -143,27 +187,31 @@ function App() {
         </form>
 
         {/* Bulk Actions */}
-        <div className="flex gap-2 mb-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
           <button
             onClick={bulkComplete}
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
           >
-            Complete All
+            <FaCheck />
+            <span>Complete All</span>
           </button>
           <button
             onClick={bulkDelete}
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
           >
-            Delete Completed
+            <FaTrash />
+            <span>Delete Completed</span>
           </button>
           <button
             onClick={exportTodos}
-            className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors"
           >
-            Export
+            <FaFileExport />
+            <span>Export</span>
           </button>
-          <label className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 cursor-pointer">
-            Import
+          <label className="flex items-center justify-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors cursor-pointer">
+            <FaFileImport />
+            <span>Import</span>
             <input
               type="file"
               onChange={importTodos}
@@ -240,7 +288,7 @@ function App() {
         </DragDropContext>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;

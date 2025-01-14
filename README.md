@@ -1,4 +1,4 @@
-# NotToDo - That's right, create a list of the tasks you don't want to do! 
+# Todo App
 
 A modern and intuitive **Todo List App** built with React and Vite. This app helps you manage your tasks efficiently with features like filtering, adding, deleting, and exporting/importing todos.
 

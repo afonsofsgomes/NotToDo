@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import { FaEdit, FaTrash, FaCheck, FaCalendarAlt, FaExclamation } from 'react-icons/fa'
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
+import React, { useState } from 'react';
+import { FaEdit, FaTrash, FaCheck, FaCalendarAlt, FaExclamation } from 'react-icons/fa';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const TodoItem = ({ 
   todo, 
@@ -11,16 +11,16 @@ const TodoItem = ({
   onUpdateDueDate,
   onUpdatePriority
 }) => {
-  const [isEditing, setIsEditing] = useState(false)
-  const [editText, setEditText] = useState(todo.text)
-  const [showDatePicker, setShowDatePicker] = useState(false)
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(todo.text);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleEdit = () => {
     if (isEditing && editText.trim()) {
-      onEdit(todo.id, editText)
+      onEdit(todo.id, editText);
     }
-    setIsEditing(!isEditing)
-  }
+    setIsEditing(!isEditing);
+  };
 
   return (
     <div className="group flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow">
@@ -114,8 +114,8 @@ const TodoItem = ({
           <DatePicker
             selected={todo.dueDate ? new Date(todo.dueDate) : null}
             onChange={(date) => {
-              onUpdateDueDate(todo.id, date)
-              setShowDatePicker(false)
+              onUpdateDueDate(todo.id, date);
+              setShowDatePicker(false);
             }}
             inline
             minDate={new Date()}
@@ -123,7 +123,7 @@ const TodoItem = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default TodoItem
+export default TodoItem;
